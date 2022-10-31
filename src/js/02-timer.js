@@ -11,7 +11,7 @@ const days = document.querySelector('[data-days]');
 const hours = document.querySelector('[data-hours]');
 const minutes = document.querySelector('[data-minutes]');
 const seconds = document.querySelector('[data-seconds]');
-
+// console.log(days);
 let timerDeadline = null;
 
 const options = {
@@ -43,12 +43,12 @@ let intervalId = setInterval(() => {
 
     console.log("🚀 ~ delta", delta);
 
-    if (delta <= 0) {
+    if (delta < 1000) {
         clearInterval(intervalId)
     };
 
     const data = convertMs(delta);
-      // console.log(data);
+    // console.log(data);
     days.textContent = addLeadinZero(data.days);
     hours.textContent = addLeadinZero(data.hours);
     minutes.textContent = addLeadinZero(data.minutes);
