@@ -1,8 +1,16 @@
 
+
+
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
-const flatpickr = require("flatpickr");
+const btnStartRef = document.querySelector('[data-start]');
+btnStartRef.setAttribute('disabled', false);
+
+const days = document.querySelector('[data-days]');
+const hours = document.querySelector('[data-hours]');
+const minutes = document.querySelector('[data-minutes]');
+const seconds = document.querySelector('[data-seconds]');
 
 let timerDeadline = null;
 
@@ -21,71 +29,41 @@ const options = {
         } else {
             btnStartRef.toggleAttribute('disabled');
         }
+        btnStartRef.addEventListener('click', onBtnStart);
     },
 };
 
-
-// console.log(timerDeadline);
-
 flatpickr("#datetime-picker", options);
 
-const btnStartRef = document.querySelector('[data-start]');
-btnStartRef.setAttribute('disabled', false);
-btnStartRef.addEventListener('click', onBtnStart);
-
 function onBtnStart() {
-    // event.preventDefault();
-    timer.start();
+// event.preventDefault();
+btnStartRef.setAttribute('disabled', false);
+let intervalId = setInterval(() => {
+    const delta = timerDeadline - Date.now();
+
+    console.log("🚀 ~ delta", delta);
+
+    if (delta <= 0) {
+        clearInterval(intervalId)
+    };
+
+    const data = convertMs(delta);
+      // console.log(data);
+    days.textContent = addLeadinZero(data.days);
+    hours.textContent = addLeadinZero(data.hours);
+    minutes.textContent = addLeadinZero(data.minutes);
+    seconds.textContent = addLeadinZero(data.seconds);
+    }, 1000)   
 }
 
-
-const timerRef = document.querySelector('.timer');
-// console.log(timerRef);
-
-const timer = {
-    intervalId: null,
-    refs: {},
-    start(rootSelector, deadline) {
-        const delta = timerDeadline - Date.now();
-        // console.log(delta);
-        this.getRefs(rootSelector);
-        this.intervalId = setInterval(() => {
-            const delta = timerDeadline - Date.now();
-
-            if (delta <= 0) {
-                clearInterval(intervalId)
-            };
-            
-            const data = this.convertMs(delta);
-            // console.log(data);
-            this.refs.days.textContent = this.addLeadinZero(data.days);
-            this.refs.hours.textContent = this.addLeadinZero(data.hours);
-            this.refs.minutes.textContent = this.addLeadinZero(data.minutes);
-            this.refs.seconds.textContent = this.addLeadinZero(data.seconds);
-        }, 1000)
-    },
-    getRefs(rootSelector) {
-        this.refs.days = rootSelector.querySelector('[data-days]');
-        this.refs.hours = rootSelector.querySelector('[data-hours]');
-        this.refs.minutes = rootSelector.querySelector('[data-minutes]');
-        this.refs.seconds = rootSelector.querySelector('[data-seconds]');
-        // console.log(this.refs);
-    },
-
-    convertMs(delta) {
+function convertMs(delta) {
         const days = Math.floor(delta / 1000 / 60 / 60 / 24);
         const hours = Math.floor(delta / 1000 / 60 / 60) % 24;
         const minutes = Math.floor(delta / 1000 / 60) % 60;
         const seconds = Math.floor(delta / 1000) % 60;
         return { days, hours, minutes, seconds };
-    },
-    addLeadinZero(value) {
+}
+    
+function addLeadinZero(value) {
         return String(value).padStart(2, '0');
-    }
-
-};
-
-
-
-timer.start(timerRef, timerDeadline);
-
+}
